@@ -1,0 +1,2 @@
+pipecat-thunderphone==0.1.0
+pipecat-ai[local,silero,openai]==1.8.1

@@ -1,0 +1,6 @@
+{
+  "name": "outbound-reminders-example", "private": true, "type": "module",
+  "engines": {"node": ">=20"},
+  "scripts": {"test": "node --test", "campaign": "node --env-file=.env campaign.js", "call": "node --env-file=.env call.js"},
+  "dependencies": {"csv-parse": "7.0.2"}
+}

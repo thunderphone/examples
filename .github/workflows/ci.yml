@@ -1,0 +1,48 @@
+name: Offline examples
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r inbound-receptionist-fastapi/requirements.txt pyflakes==3.4.0
+      - run: python -m unittest -v
+        working-directory: inbound-receptionist-fastapi
+      - run: python bot.py --dry-run
+        working-directory: pipecat-swap
+      - run: python bot.py --dry-run
+        working-directory: livekit-swap
+      - run: python -m pyflakes inbound-receptionist-fastapi/*.py pipecat-swap/*.py livekit-swap/*.py
+  node:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        example: [outbound-reminders-node, web-widget-nextjs]
+    defaults:
+      run:
+        working-directory: ${{ matrix.example }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: ${{ matrix.example }}/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: for file in *.js app/*.js; do [ ! -f "$file" ] || node --check "$file" || exit 1; done
+      - if: matrix.example == 'outbound-reminders-node'
+        run: |
+          node campaign.js --dry-run
+          node call.js --dry-run
+      - if: matrix.example == 'web-widget-nextjs'
+        run: |
+          node setup.js --dry-run
+          npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'

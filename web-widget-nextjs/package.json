@@ -1,0 +1,6 @@
+{
+  "name": "thunderphone-widget-example", "private": true, "type": "module",
+  "engines": {"node": ">=20.19"},
+  "scripts": {"dev": "next dev", "build": "next build --webpack", "start": "next start", "test": "node --test", "setup": "node --env-file=.env setup.js"},
+  "dependencies": {"@thunderphone/widget": "1.3.0", "next": "16.3.5", "react": "19.2.3", "react-dom": "19.2.3"}
+}
