@@ -1,2 +1,6 @@
-# examples
-Runnable ThunderPhone examples: inbound receptionist, outbound campaigns, web widget, Pipecat and LiveKit endpoint swaps.
+# thunderphone/examples
+
+Runnable ThunderPhone examples. Content lands here after review.
+
+- Docs: https://thunderphone.com/docs
+- Skills: https://github.com/thunderphone/skills
