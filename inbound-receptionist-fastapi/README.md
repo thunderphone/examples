@@ -17,7 +17,7 @@ pip install -r requirements.txt
 python -m unittest -v                 # offline; no key or network
 cp .env.example .env                 # fill the four values locally
 set -a; . ./.env; set +a
-python app.py                       # live setup; changes agent and number routing
+python app.py --setup               # live setup; changes agent and number routing
 uvicorn app:app --host 0.0.0.0 --port 8000
 ```
 

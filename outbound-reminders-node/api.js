@@ -14,7 +14,7 @@ export async function api(method, path, body) {
       'Content-Type': 'application/json'},
     body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(30000),
   });
-  if (!r.ok) throw new Error(`${method} ${path}: HTTP ${r.status}`);
+  if (!r.ok) throw new Error(`${method} ${path}: HTTP ${r.status} ${(await r.text()).slice(0, 300)}`);
   return r.json();
 }
 export async function poll(read, done, attempts = 120, delay = 5000) {

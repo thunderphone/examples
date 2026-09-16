@@ -18,18 +18,25 @@ def api(method, path, body=None):
                              json=body, timeout=30, headers={
                                  'Authorization': 'Bearer ' + os.environ['THUNDERPHONE_API_KEY']})
     if not response.is_success:
-        raise RuntimeError(f'{method} {path}: HTTP {response.status_code}')
+        raise RuntimeError(f'{method} {path}: HTTP {response.status_code} {response.text[:300]}')
     return response.json()
+
+
+def load_state():
+    try:
+        return json.loads(STATE.read_text())
+    except (OSError, ValueError):
+        return {}
 
 
 def configure(send, env):
     payload = json.loads(Path('agent.json').read_text())
-    payload['voice'] = env['VOICE_ID']
-    number_id = int(env['PHONE_NUMBER_ID'])
-    url = env['PUBLIC_URL'].rstrip('/') + '/thunderphone-webhook'
+    payload['voice'] = env.get('VOICE_ID', '')
+    number_id = int(env.get('PHONE_NUMBER_ID') or 0)
+    url = env.get('PUBLIC_URL', '').rstrip('/') + '/thunderphone-webhook'
     if not url.startswith('https://') or not payload['voice'] or number_id < 1:
         raise ValueError('Set VOICE_ID, positive PHONE_NUMBER_ID and HTTPS PUBLIC_URL')
-    if STATE.exists() and json.loads(STATE.read_text())['url'] != url:
+    if STATE.exists() and load_state().get('url') != url:
         raise ValueError('Existing webhook URL differs; update the endpoint in the dashboard')
     matches = [a for a in send('GET', '/v1/agents') if a['name'] == payload['name']]
     if len(matches) > 1:
@@ -52,7 +59,7 @@ def configure(send, env):
 
 @app.post('/thunderphone-webhook')
 async def webhook(request: Request):
-    secret = json.loads(STATE.read_text())['secret']
+    secret = load_state().get('secret', '')
     body = await request.body()
     expected = hmac.new(secret.encode(), body, hashlib.sha256).hexdigest()
     signature = request.headers.get('X-ThunderPhone-Signature', '')
@@ -69,4 +76,8 @@ async def webhook(request: Request):
 
 
 if __name__ == '__main__':
+    import sys
+    if sys.argv[1:] != ['--setup']:
+        sys.exit('Usage: python app.py --setup   (creates/updates the agent, assigns the number '
+                 'and registers the webhook)\nRun the server with: uvicorn app:app --port 8000')
     configure(api, os.environ)

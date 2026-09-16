@@ -12,7 +12,7 @@ realtime examples use the documented framework integrations.
 | [LiveKit swap](livekit-swap/) | Saved agent as a LiveKit realtime model | `python bot.py --dry-run` |
 | [Claude Code session](claude-code-session/) | Copyable skill prompt sequence | README only |
 
-Get an API key at [app.thunderphone.com](https://app.thunderphone.com) → Settings → API keys.
+Get an API key at [app.thunderphone.com](https://app.thunderphone.com) → Organization → Keys.
 Copy the chosen example's `.env.example` to `.env` and fill it locally; follow that
 README's installation and run commands. The REST base is `https://api.thunderphone.com`
 with `Authorization: Bearer $THUNDERPHONE_API_KEY`. The Streamable HTTP MCP server is
